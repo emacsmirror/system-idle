@@ -67,10 +67,8 @@
 (defvar system-idle--dbus-session-path nil
   "Copy of `org-logind-dbus-session-path'.")
 
-(defun system-idle--poll-elogind ()
+(defun system-idle--poll-logind ()
   "Copy of `org-logind-user-idle-seconds'."
-  (unless (fboundp 'dbus-get-property)
-    (require 'dbus))
   (- (float-time)
      (/ (dbus-get-property :system
                            "org.freedesktop.login1"
@@ -104,7 +102,7 @@
           (start-process-shell-command
            "swayidle"
            " *system-idle:swayidle*"
-           "swayidle timeout 9 'touch /tmp/system-idle' resume 'rm /tmp/system-idle'"))
+           "swayidle timeout 9 'touch /tmp/emacs-system-idle' resume 'rm -f /tmp/emacs-system-idle'"))
     (set-process-query-on-exit-flag system-idle--swayidle-process nil)))
 
 (defun system-idle--poll-swayidle ()
@@ -122,7 +120,7 @@ Returns 0 if invoked during the first 9 seconds."
   "Function to be invoked by `system-idle-seconds', must return a number.")
 
 (defun system-idle-recalculate-variables (&optional assert)
-  "Try to set `system-idle-seconds-function', emitting errors if ASSERT."
+  "Try to set `system-idle-seconds-function', signal fails if ASSERT."
   (setq system-idle--x11-program
         (seq-find #'executable-find '("x11idle" "xprintidle")))
   (setq system-idle--dbus-session-path
@@ -139,10 +137,13 @@ Returns 0 if invoked during the first 9 seconds."
   (setq system-idle-seconds-function
         (or (and (eq system-type 'darwin)
                  #'system-idle--poll-mac)
-            (let ((DESKTOP_SESSION (getenv "DESKTOP_SESSION")))
+            (let ((DESKTOP_SESSION (getenv "DESKTOP_SESSION"))
+                  ;; TODO: Use this instead, the above envvar is deprecated.
+                  (XDG_CURRENT_DESKTOP (getenv "XDG_CURRENT_DESKTOP")))
               (and DESKTOP_SESSION
                    (not (string-search "xorg" DESKTOP_SESSION))
-                   (if (string-match-p (rx (or "gnome" "ubuntu")) DESKTOP_SESSION)
+                   (if (string-match-p (rx word-boundary (or "gnome" "ubuntu"))
+                                       DESKTOP_SESSION)
                        #'system-idle--poll-gnome
                      (and (string-match-p (rx "plasma") DESKTOP_SESSION) ;; KDE
                           (if (executable-find "swayidle")
@@ -151,7 +152,7 @@ Returns 0 if invoked during the first 9 seconds."
                             (when assert
                               (error "system-idle: Install swayidle")))))))
             (and system-idle--dbus-session-path
-                 #'system-idle--poll-elogind)
+                 #'system-idle--poll-logind)
             ;; NOTE: This condition is also true under XWayland, so it must come
             ;; after all other checks for Wayland compositors if we want it to be
             ;; invoked under true X only.
@@ -178,6 +179,9 @@ Always returns a number."
     (if (numberp value)
         value
       (error "Function at system-idle-seconds-function did not return a number"))))
+
+;; Maybe call `system-idle--ensure-swayidle' early.
+(system-idle-recalculate-variables)
 
 (provide 'system-idle)
 
