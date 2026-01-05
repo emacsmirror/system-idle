@@ -16,7 +16,7 @@
 
 ;; Author:   Martin Edström <meedstrom91@gmail.com>
 ;; Created:  2026-01-05
-;; Keywords: tools
+;; Keywords: lisp
 ;; URL:      https://github.com/meedstrom/sys-idle
 ;; Package-Requires: ((emacs "28.1"))
 
@@ -92,17 +92,20 @@
 ;; https://github.com/swaywm/swayidle/issues/181
 ;; https://github.com/marvin1099/wayidletool
 (defvar sys-idle--swayidle-process nil)
-(defun sys-idle--poll-swayidle ()
-  "Check idle on compositors supporting the ext-idle-notify protocol.
-This includes KDE Plasma and Sway.
-Returns 0 if invoked during the first 9 seconds."
+(defun sys-idle--ensure-swayidle ()
   (when (not (process-live-p sys-idle--swayidle-process))
     (setq sys-idle--swayidle-process
           (start-process-shell-command
            "swayidle"
            " *sys-idle:swayidle*"
            "swayidle timeout 9 'touch /tmp/sys-idle' resume 'rm /tmp/sys-idle'"))
-    (set-process-query-on-exit-flag sys-idle--swayidle-process nil))
+    (set-process-query-on-exit-flag sys-idle--swayidle-process nil)))
+
+(defun sys-idle--poll-swayidle ()
+  "Check idle on compositors supporting the ext-idle-notify protocol.
+This includes KDE Plasma and Sway.
+Returns 0 if invoked during the first 9 seconds."
+  (sys-idle--ensure-swayidle)
   (let ((attr (file-attributes "/tmp/sys-idle")))
     (if attr
         (+ 9 (time-to-seconds
@@ -137,7 +140,8 @@ Returns 0 if invoked during the first 9 seconds."
                        #'sys-idle--poll-gnome
                      (and (string-match-p (rx "plasma") DESKTOP_SESSION) ;; KDE
                           (if (executable-find "swayidle")
-                              #'sys-idle--poll-swayidle
+                              (progn (sys-idle--ensure-swayidle)
+                                     #'sys-idle--poll-swayidle)
                             (when assert
                               (error "sys-idle: Install swayidle")))))))
             (and sys-idle--dbus-session-path
