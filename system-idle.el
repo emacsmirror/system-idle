@@ -110,7 +110,7 @@
 This includes KDE Plasma and Sway.
 Returns 0 if invoked during the first 9 seconds."
   (system-idle--ensure-swayidle)
-  (let ((attr (file-attributes "/tmp/system-idle")))
+  (let ((attr (file-attributes "/tmp/emacs-system-idle")))
     (if attr
         (+ 9 (time-to-seconds
               (time-since (file-attribute-modification-time attr))))
