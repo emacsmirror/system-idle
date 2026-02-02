@@ -122,12 +122,13 @@ RESTART means restart it."
     (delete-process system-idle--swayidle-process))
   (when (not (process-live-p system-idle--swayidle-process))
     (setq system-idle--swayidle-process
-          (start-process-shell-command
-           "system-idle-swayidle"
-           " *system-idle-swayidle*"
-           (format "swayidle timeout 9 'touch %s' resume 'rm -f %s'"
-                   (shell-quote-argument system-idle--touch-me-file)
-                   (shell-quote-argument system-idle--touch-me-file))))
+          (let ((default-directory temporary-file-directory))
+            (start-process-shell-command
+             "system-idle-swayidle"
+             " *system-idle-swayidle*"
+             (format "swayidle timeout 9 'touch %s' resume 'rm -f %s'"
+                     (shell-quote-argument system-idle--touch-me-file)
+                     (shell-quote-argument system-idle--touch-me-file)))))
     (set-process-query-on-exit-flag system-idle--swayidle-process nil)))
 
 (defun system-idle--poll-swayidle ()
