@@ -111,9 +111,7 @@
 
 (defvar system-idle--swayidle-process nil)
 (defvar system-idle--touch-me-file
-  (let ((default-directory invocation-directory))
-    (with-temp-buffer
-      (expand-file-name "emacs-system-idle" (temporary-file-directory)))))
+  (expand-file-name "emacs-system-idle" temporary-file-directory))
 
 (defun system-idle--ensure-swayidle (&optional restart)
   "Ensure that our Swayidle instance is running.
@@ -239,8 +237,8 @@ Upon failure, signal an informative error if ASSERT, else return nil."
             (when assert
               (error "system-idle: Could not get idle time on this system")))))
 
-;; Maybe call `system-idle--ensure-swayidle' early, so `system-idle-seconds'
-;; returns an accurate value on first use.
+;; Make sure to spawn a Swayidle process now at load time if that's what we'll
+;; use, so `system-idle-seconds' will return an accurate value on first use.
 (unless system-idle-seconds-function
   (system-idle-reconfigure))
 
