@@ -45,12 +45,13 @@
 ;;   - Requires installing "x11idle" or "xprintidle"
 
 ;; To test that it works, eval the following and do not touch the computer for
-;; 11 seconds.
+;; 11 seconds.  A number should be printed to *Messages*.
 
 ;;     (run-with-timer 11 nil (lambda () (print (system-idle-seconds))))
 
-;; Not guaranteed to return correct results if user has switched from the
-;; graphical desktop to a TTY console by the time it is called.
+;; A known issue: `system-idle-seconds' is not guaranteed to return correct
+;; results if user has switched from the graphical desktop to a TTY console
+;; and is in the console by the time it is called.
 
 
 ;;; Code:

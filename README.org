@@ -5,11 +5,11 @@ This differs from the built-in =current-idle-seconds=, which can only be used fo
 
 This differs from =org-user-idle-seconds= in org-clock.el, by adding support for Wayland.  Hopefully more in the future.  Plus your code won't have to depend on loading Org, just this little library.
 
-Supported environments:
+** Supported environments
 
 - Mac OS
 - Wayland (GNOME)
-- Wayland (KDE and others supporting [[https://wayland.app/protocols/ext-idle-notify-v1#compositor-support][ext-idle-notify]] protocol)
+- Wayland (KDE Plasma, and other compositors supporting the [[https://wayland.app/protocols/ext-idle-notify-v1#compositor-support][ext-idle-notify]] protocol)
   - Returns 0 if invoked in the first 9 seconds or so
   - Requires installing =swayidle=
 - X11
@@ -20,5 +20,7 @@ To test that it works, eval the following and do not touch the computer for
 
 :    (run-with-timer 11 nil (lambda () (print (system-idle-seconds))))
 
+** Known issues
+
 Not guaranteed to return correct results if user has switched from the
-graphical desktop to a TTY console by the time it is called.
+graphical desktop to a TTY console and is in the console by the time it is called.
