@@ -12,7 +12,8 @@ This differs from =org-user-idle-seconds= in org-clock.el, by adding support for
 - Wayland (KDE Plasma, and other compositors supporting the [[https://wayland.app/protocols/ext-idle-notify-v1#compositor-support][ext-idle-notify]] protocol)
   - Returns 0 if invoked in the first 9 seconds or so
   - Requires installing =swayidle=
-- X11
+- X11 (GNOME)
+- X11 (any)
   - Requires installing =x11idle= or =xprintidle=
 
 To test that it works, eval the following and do not touch the computer for

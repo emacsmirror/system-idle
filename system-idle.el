@@ -41,7 +41,8 @@
 ;;   - https://wayland.app/protocols/ext-idle-notify-v1#compositor-support
 ;;   - Returns 0 if invoked in the first 9 seconds or so
 ;;   - Requires installing "swayidle"
-;; - X11
+;; - X11 (GNOME)
+;; - X11 (any)
 ;;   - Requires installing "x11idle" or "xprintidle"
 
 ;; To test that it works, eval the following and do not touch the computer for
@@ -139,17 +140,20 @@ Returns 0 if invoked during the first 9 seconds."
               (time-since (file-attribute-modification-time attr))))
       0)))
 
-;; Not verified the names, just guessing from this resource:
-;; https://wayland.app/protocols/ext-idle-notify-v1#compositor-support
-(defvar system-idle--swayidle-support-re
+(defconst system-idle--swayidle-support-re
   (rx word-boundary
-      (or "cage" "cosmic" "hyprland" "jay" "kwin" "labwc"
-          "louvre" "niri" "river" "sway" "treeland" "wayfire")
+      (or
+       ;; Verified working
+       "kwin"
+       ;; Not verified, just guessing from
+       ;; https://wayland.app/protocols/ext-idle-notify-v1#compositor-support
+       "cage" "cosmic" "hyprland" "jay"  "labwc"
+       "louvre" "niri" "river" "sway" "treeland" "wayfire")
       word-boundary)
   "Regexp matching process invocation string of a supported compositor.")
 
-;; REVIEW: If we decide it's too sloppy to regexp-search the
-;; process-invocation string, maybe use XDG_CURRENT_DESKTOP:
+;; REVIEW: If we decide `system-idle--swayidle-support-re' is too sloppy a
+;; method, maybe use XDG_CURRENT_DESKTOP:
 ;; https://unix.stackexchange.com/a/645761
 ;; But:
 ;; https://old.reddit.com/r/swaywm/comments/vy4lrr/why_doesnt_sway_set_xdg_current_desktop/
