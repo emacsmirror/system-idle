@@ -213,7 +213,6 @@ Upon failure, signal an informative error if ASSERT, else return nil."
                  #'system-idle--poll-mac)
             (let ((DESKTOP_SESSION (getenv "DESKTOP_SESSION")))
               (and DESKTOP_SESSION
-                   (not (string-search "xorg" DESKTOP_SESSION))
                    (string-match-p (rx word-boundary (or "gnome" "ubuntu"))
                                    DESKTOP_SESSION)
                    (if (ignore-errors (system-idle--poll-gnome))
