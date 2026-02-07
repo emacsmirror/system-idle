@@ -142,13 +142,11 @@ Returns 0 if invoked during the first 9 seconds."
 
 (defconst system-idle--swayidle-support-re
   (rx word-boundary
-      (or
-       ;; Verified working
-       "kwin"
-       ;; Not verified, just guessing from
-       ;; https://wayland.app/protocols/ext-idle-notify-v1#compositor-support
-       "cage" "cosmic" "hyprland" "jay"  "labwc"
-       "louvre" "niri" "river" "sway" "treeland" "wayfire")
+      (or "kwin" ; Verified 2026-02-07
+          ;; Not verified, just guessing from
+          ;; https://wayland.app/protocols/ext-idle-notify-v1#compositor-support
+          "cage" "cosmic" "hyprland" "jay"  "labwc" "louvre"
+          "niri" "phoc" "river" "sway" "treeland" "wayfire")
       word-boundary)
   "Regexp matching process invocation string of a supported compositor.")
 
