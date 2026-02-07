@@ -21,6 +21,10 @@ To test that it works, eval the following and do not touch the computer for
 
 :    (run-with-timer 11 nil (lambda () (print (system-idle-seconds))))
 
+#+begin_important
+*Your Help Needed!*  It's impossible to test all possible systems, so take a moment to [[https://github.com/meedstrom/system-idle/issue/1][report an issue]] if this does not work on yours.  Be a tester and maybe we can add support for yours!
+#+end_important
+
 ** Known issues
 
 Not guaranteed to return correct results if user has switched from the
