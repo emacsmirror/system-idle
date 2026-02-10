@@ -152,6 +152,8 @@ RESTART means restart it."
             (start-process-shell-command
              "system-idle-swayidle"
              " *system-idle-swayidle*"
+             ;; TODO: Add an instruction to also touch the file when the
+             ;; system is manually put to sleep.
              (format "swayidle timeout 9 'touch %s' resume 'rm -f %s'"
                      (shell-quote-argument system-idle--touch-me-file)
                      (shell-quote-argument system-idle--touch-me-file)))))
